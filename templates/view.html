@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Detalhes do Registro</title>
+
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --border: #e1e4e8;
+      --text: #24292f;
+      --muted: #6a737d;
+      --accent: #2563eb;
+      --danger: #dc2626;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.6rem;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      row-gap: 8px;
+      column-gap: 10px;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+
+    .meta strong {
+      color: var(--muted);
+    }
+
+    .status {
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .status-ok {
+      background: #e6f4ea;
+      color: #137333;
+    }
+
+    .status-error {
+      background: #fce8e6;
+      color: var(--danger);
+    }
+
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      max-height: 400px;
+    }
+
+    .section {
+      margin-top: 25px;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .back {
+      margin-top: 25px;
+      display: inline-block;
+    }
+
+    @media (max-width: 600px) {
+      .meta {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <section class="card">
+
+      <h1>Registro {{ row['id'] }}</h1>
+
+      <div class="meta">
+        <strong>Timestamp:</strong>
+        <span>{{ row['timestamp'] }}</span>
+
+        <strong>Status:</strong>
+        <span class="status {% if row['status'] == 200 %}status-ok{% else %}status-error{% endif %}">
+          {{ row['status'] }}
+        </span>
+
+        <strong>URL:</strong>
+        <span>
+          <a href="{{ row['url'] }}" target="_blank" rel="noopener noreferrer">
+            {{ row['url'] }}
+          </a>
+        </span>
+      </div>
+
+      <div class="section">
+        <h2>Body (preview)</h2>
+        <pre>{{ row['body'][:1000] }}</pre>
+      </div>
+
+      <div class="section">
+        <h2>JSON salvo</h2>
+        {% if pretty_json %}
+          <pre>{{ pretty_json }}</pre>
+        {% else %}
+          <p style="color: var(--muted);">(nenhum JSON salvo ou JSON inválido)</p>
+        {% endif %}
+      </div>
+
+      <a href="/" class="back">← Voltar</a>
+
+    </section>
+  </main>
+</body>
+</html>

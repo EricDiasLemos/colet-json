@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Responses - Lista</title>
+
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --border: #e1e4e8;
+      --text: #24292f;
+      --muted: #6a737d;
+      --accent: #2563eb;
+      --success-bg: #e6f4ea;
+      --success-text: #137333;
+      --error-bg: #fce8e6;
+      --error-text: #b91c1c;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.6rem;
+    }
+
+    .actions {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .form-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"], input[type="password"] {
+      flex: 1;
+      min-width: 200px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .auth-section {
+      background: #fff9e6;
+      border: 1px solid #ffc107;
+      border-radius: 6px;
+      padding: 15px;
+      margin: 15px 0;
+      display: none;
+    }
+
+    .auth-section.show {
+      display: block;
+    }
+
+    .auth-section h3 {
+      margin-top: 0;
+      color: #856404;
+    }
+
+    button, .btn {
+      display: inline-block;
+      padding: 8px 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button:hover, .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      padding: 4px 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .btn-danger:hover {
+      opacity: 0.8;
+    }
+
+    .message {
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .message.success {
+      background: var(--success-bg);
+      color: var(--success-text);
+      display: block;
+    }
+
+    .message.error {
+      background: var(--error-bg);
+      color: var(--error-text);
+      display: block;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 700px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 10px;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f1f3f5;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    tr:hover {
+      background: #f9fafb;
+    }
+
+    .status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+      font-size: 0.85rem;
+    }
+
+    .status-ok {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    .status-error {
+      background: var(--error-bg);
+      color: var(--error-text);
+    }
+
+    .url-cell {
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      th, td {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <section class="card">
+
+      <h1>Registros do responses.db</h1>
+
+      <div class="form-group">
+        <input type="text" id="urlInput" placeholder="Digite a URL para coletar...">
+        <button onclick="collectUrl()">Coletar</button>
+        <button class="btn-secondary" onclick="refreshPage()">Atualizar</button>
+      </div>
+
+      <div id="authSection" class="auth-section">
+        <h3>⚠️ Autenticação Necessária</h3>
+        <p id="authMessage"></p>
+        <div class="form-group">
+          <input type="text" id="usernameInput" placeholder="Login...">
+          <input type="password" id="passwordInput" placeholder="Senha...">
+          <button onclick="collectWithAuth()">Enviar</button>
+        </div>
+      </div>
+
+      <div id="message" class="message"></div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Timestamp</th>
+              <th>Status</th>
+              <th>URL</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in rows %}
+            <tr>
+              <td>{{ r['id'] }}</td>
+              <td>{{ r['timestamp'] }}</td>
+              <td>
+                <span class="status {% if r['status'] == 200 %}status-ok{% else %}status-error{% endif %}">
+                  {{ r['status'] }}
+                </span>
+              </td>
+              <td class="url-cell">
+                <a href="{{ r['url'] }}" target="_blank" rel="noopener noreferrer">
+                  {{ r['url'] }}
+                </a>
+              </td>
+              <td>
+                <a href="/view/{{ r['id'] }}">Ver</a> | 
+                <a href="/export/{{ r['id'] }}">HTML</a> | 
+                <button class="btn-danger" data-id="{{ r['id'] }}" onclick="deleteRecord(this.dataset.id)">Apagar</button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    let currentUrl = '';
+
+    function collectUrl() {
+      currentUrl = document.getElementById('urlInput').value.trim();
+      const msgEl = document.getElementById('message');
+      const authSection = document.getElementById('authSection');
+      
+      if (!currentUrl) {
+        msgEl.textContent = 'Por favor, digite uma URL';
+        msgEl.className = 'message error';
+        return;
+      }
+
+      authSection.classList.remove('show');
+      msgEl.className = 'message';
+
+      const formData = new FormData();
+      formData.append('url', currentUrl);
+
+      fetch('/collect', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          msgEl.textContent = data.message;
+          msgEl.className = 'message success';
+          document.getElementById('urlInput').value = '';
+          setTimeout(() => location.reload(), 1500);
+        } else if (data.auth_required) {
+          msgEl.className = 'message';
+          authSection.classList.add('show');
+          document.getElementById('authMessage').textContent = data.message;
+        } else {
+          msgEl.textContent = data.message;
+          msgEl.className = 'message error';
+        }
+      })
+      .catch(err => {
+        msgEl.textContent = 'Erro ao coletar: ' + err.message;
+        msgEl.className = 'message error';
+      });
+    }
+
+    function collectWithAuth() {
+      const username = document.getElementById('usernameInput').value.trim();
+      const password = document.getElementById('passwordInput').value.trim();
+      const msgEl = document.getElementById('message');
+      
+      if (!username || !password) {
+        msgEl.textContent = 'Por favor, forneça login e senha';
+        msgEl.className = 'message error';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('url', currentUrl);
+      formData.append('username', username);
+      formData.append('password', password);
+
+      fetch('/collect', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          msgEl.textContent = data.message;
+          msgEl.className = 'message success';
+          document.getElementById('usernameInput').value = '';
+          document.getElementById('passwordInput').value = '';
+          document.getElementById('authSection').classList.remove('show');
+          setTimeout(() => location.reload(), 1500);
+        } else {
+          msgEl.textContent = data.message;
+          msgEl.className = 'message error';
+        }
+      })
+      .catch(err => {
+        msgEl.textContent = 'Erro: ' + err.message;
+        msgEl.className = 'message error';
+      });
+    }
+
+    function refreshPage() {
+      location.reload();
+    }
+
+    // Permitir Enter no input para coletar
+    document.getElementById('urlInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') collectUrl();
+    });
+
+    document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') collectWithAuth();
+    });
+
+    function deleteRecord(recordId) {
+      if (!confirm(`Tem certeza que deseja deletar o registro ${recordId}?`)) {
+        return;
+      }
+
+      const formData = new FormData();
+
+      fetch(`/delete/${recordId}`, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        const msgEl = document.getElementById('message');
+        if (data.success) {
+          msgEl.textContent = data.message;
+          msgEl.className = 'message success';
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          msgEl.textContent = data.message;
+          msgEl.className = 'message error';
+        }
+      })
+      .catch(err => {
+        const msgEl = document.getElementById('message');
+        msgEl.textContent = 'Erro ao deletar: ' + err.message;
+        msgEl.className = 'message error';
+      });
+    }
+  </script>
+</body>
+</html>

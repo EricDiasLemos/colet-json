@@ -1,0 +1,34 @@
+# Arquivos de banco de dados
+*.db
+responses.db
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Ambientes virtuais
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ambiente local
+.env
+.DS_Store
+
+# Cache local
+.pytest_cache/
+.coverage
+
+# Dados exportados
+responses_export.*
+
+# Logs
+*.log
