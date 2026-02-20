@@ -15,7 +15,7 @@ COPY web_app.py .
 COPY templates/ templates/
 COPY Colet_JSON_autentic.py .
 COPY colet_json_noautentic.py .
-COPY zero.py .
+
 
 # Criar volume para o banco de dados persistir
 VOLUME ["/app/data"]
