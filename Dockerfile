@@ -13,7 +13,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar código da aplicação
 COPY web_app.py .
 COPY templates/ templates/
-COPY Colet_JSON_autentic.py .
 COPY colet_json_noautentic.py .
 
 
