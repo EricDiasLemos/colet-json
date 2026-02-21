@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g, request, Response, jsonify
+from flask import Flask, render_template, g, request, Response, jsonify, current_app
 import sqlite3
 import json
 import base64
@@ -13,6 +13,27 @@ import csv
 DATABASE = os.path.join(os.path.dirname(__file__), 'responses.db')
 
 app = Flask(__name__)
+
+
+def init_sqlite(db_path: str = DATABASE) -> None:
+    """Cria o arquivo de banco e a tabela necessária caso não existam."""
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    # Cria tabela com campos: id, url, status, timestamp, body, json
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS responses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            url TEXT NOT NULL,
+            status INTEGER,
+            timestamp TEXT NOT NULL,
+            body TEXT,
+            json TEXT
+        );
+        """
+    )
+    conn.commit()
+    conn.close()
 
 
 def fetch_url(url: str, timeout: int = 10, username: str = None, password: str = None) -> tuple[int, str]:
@@ -64,10 +85,18 @@ def get_db():
     """Abre (ou retorna) uma conexão SQLite por request usando `g`.
 
     Usa `row_factory` para permitir acesso por nome de coluna (row['id']).
+    Também inicializa o banco se não existir.
     """
+    # Obtém o caminho do banco da config ou usa o padrão
+    db_path = current_app.config.get('DATABASE', DATABASE)
+    
+    # Garante que o banco de dados foi inicializado
+    if not os.path.exists(db_path):
+        init_sqlite(db_path)
+    
     db = getattr(g, '_database', None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
+        db = g._database = sqlite3.connect(db_path)
         db.row_factory = sqlite3.Row
     return db
 
@@ -218,5 +247,8 @@ def collect():
 
 
 if __name__ == '__main__':
+    # Inicializa o banco de dados antes de iniciar o servidor
+    init_sqlite(DATABASE)
+    print(f"[OK] Banco de dados inicializado: {DATABASE}")
     # Inicia o servidor Flask em modo debug (apenas para desenvolvimento local)
     app.run(debug=True, port=5000)
