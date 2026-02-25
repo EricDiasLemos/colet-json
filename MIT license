@@ -1,0 +1,17 @@
+---
+
+### Observação Estratégica
+
+Essa versão:
+
+- Fica visualmente organizada no preview do GitHub  
+- Comunica valor técnico de forma clara  
+- É compreensível para RH  
+- Mantém densidade técnica para avaliadores técnicos  
+
+Se quiser, posso agora gerar:
+
+- Versão bilíngue (PT + EN)
+- Versão orientada 100% para DevOps
+- README com seção de “Decisões de Arquitetura”
+- Versão ainda mais profissional com diagrama Mermaid (renderiza no GitHub)
